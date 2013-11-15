@@ -1,6 +1,12 @@
 <?php
 
-class Symfony2_Sniffs_ReturnWhitespaceSniff implements PHP_CodeSniffer_Sniff
+/**
+ * Checks that for blocks where the only statement is a return statement, there should be no
+ * blank lines and for blocks where the return statement is preceded by one or more other
+ * statements, there should be exactly one blank line between those statements and the return
+ * statement.
+ */
+class Symfony2_Sniffs_Whitespace_ReturnWhitespaceSniff implements PHP_CodeSniffer_Sniff
 {
     /**
      * Returns the token types that this sniff is interested in.
@@ -27,14 +33,13 @@ class Symfony2_Sniffs_ReturnWhitespaceSniff implements PHP_CodeSniffer_Sniff
         $newlines = 0;
         $originalStackPtr = $stackPtr;
 
+        $allowed = 2; // allowed number of newline characters before the statement
         while ($stackPtr > 1) {
             $stackPtr -= 1;
-            var_dump($tokens[$stackPtr]['type']);
-            var_dump($tokens[$stackPtr]['content']);
             if ($tokens[$stackPtr]['code'] === T_OPEN_CURLY_BRACKET) {
-                var_dump($tokens[$stackPtr]);
-            }
-            if ($tokens[$stackPtr]['code'] === T_COMMENT) {
+                $allowed = 1;
+                break;
+            } else if ($tokens[$stackPtr]['code'] === T_COMMENT) {
                 continue;
             } else if ($tokens[$stackPtr]['code'] === T_WHITESPACE) {
                 $newlines += substr_count($tokens[$stackPtr]['content'], "\n");
@@ -43,8 +48,12 @@ class Symfony2_Sniffs_ReturnWhitespaceSniff implements PHP_CodeSniffer_Sniff
             }
         }
 
-        if ($newlines !== 2) {
-            $error = 'There must be one blank line before a return statement';
+        if ($newlines !== $allowed) {
+            if ($allowed === 2) {
+                $error = 'There must be one blank line before a return statement';
+            } else {
+                $error = 'There must be no blank lines for scopes with only a return statement';
+            }
             $phpcsFile->addError($error, $originalStackPtr, 'Found');
         }
     }
