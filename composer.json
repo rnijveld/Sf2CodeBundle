@@ -1,0 +1,21 @@
+{
+    "name": "rnijveld/sf2code-bundle",
+    "description": "Symfony2 Code style bundle",
+    "license": "BSD",
+    "authors": [
+        {
+            "name": "Ruben Nijveld",
+            "email": "ruben@gewooniets.nl"
+        }
+    ],
+    "require": {
+        "symfony/symfony": ">=2.3.0,<3.0.0",
+        "squizlabs/php_codesniffer": "1.4.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Rnijveld\\Sf2CodeBundle\\": ""
+        }
+    },
+    "target-dir": "Rnijveld/Sf2CodeBundle"
+}
